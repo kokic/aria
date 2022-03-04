@@ -18,9 +18,9 @@ public class QuasiExpress {
 
 		boolean bool = false;
 		expr(test.getClass() == Integer.class && (Integer) test >= 1 && pass(bool = true));
-		expr(test.getClass() == String.class 
-	        && keep(test.equals("true") || test.equals("1")) 
-	        && pass(test = true));
+		expr(test.getClass() == String.class
+				&& keep(test.equals("true") || test.equals("1"))
+				&& pass(test = true));
 		
 		return bool;
 	}

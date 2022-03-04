@@ -24,7 +24,7 @@ public class ComposeTest {
         // QuasiFunction.invokeUniversal(QuasiFunction.println, "test");
         Object res = QuasiFunction.invokeUniversal(Comb.with(out, out), "exec"); 
         System.out.println(res);
-
+        
     }
 
     
