@@ -8,8 +8,6 @@ import static quasi.QuasiExpress.pass;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 public class QuasiFunction {
 
@@ -27,7 +25,7 @@ public class QuasiFunction {
     public interface zero_void extends base { void invoke(); }
     public interface zero_bool extends base { boolean invoke(); }
     
-    public static final QuasiFunction.one_bool<Object> println = new QuasiFunction.one_bool<Object>() {
+    public static final one_bool<Object> println = new one_bool<Object>() {
         @Override
         public boolean invoke(Object arg) {
             System.out.println(arg);
@@ -35,13 +33,13 @@ public class QuasiFunction {
         }
     };
 
-    // instance : QuasiFunction.base -> Type[]
-    public static final QuasiFunction.any<Type[]> getGenericTypes = (
-            Object... args) -> ((ParameterizedType) (args[0]).getClass()
-                    .getGenericInterfaces()[0])
-                    .getActualTypeArguments();
-
     public static Object invokeUniversal(base func, Object... args) {
+
+        // expand for (...) as (Object[]
+        // System.out.println(args.length);
+        // System.out.println(args[0].getClass().isArray());
+        //if (args.length == 1 && args[0].getClass().isArray())
+          //  args = (Object[]) args[0];
 
         Method[] methods = func.getClass().getMethods();
         Method invoke = null;
@@ -58,13 +56,15 @@ public class QuasiFunction {
 
         invoke.setAccessible(true);
         params = invoke.getParameters();
+        
+        boolean embed = params.length == 1 && args.length > 1;
 
         try {
 
             expr( keep(params.length)
-              &&  pass(pass(vararg = params[0].isVarArgs())
+              &&  pass(pass(vararg = params[0].isVarArgs() || embed)
               &&  pass(result = invoke.invoke(func, 
-                  cond(vararg, new Object[] { args }, args))))
+                  cond(vararg, new Object[] { args }, args ) )))
               ||  pass(result = invoke.invoke(func)) );
 
         } catch (Exception e) {

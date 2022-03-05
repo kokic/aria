@@ -1,38 +1,30 @@
 package compose;
 
+import static quasi.QuasiFunction.invokeUniversal;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import quasi.QuasiFunction;
+import quasi.QuasiFunction.any;
+import quasi.QuasiFunction.zero;
 
 public class Comb {
+    
+    // instance : QuasiFunction.base -> Type[]
+    public static final QuasiFunction.any<Type[]> getGenericTypes = (
+        Object... args) -> ((ParameterizedType) (args[0]).getClass()
+                .getGenericInterfaces()[0])
+                .getActualTypeArguments();
 
     public static QuasiFunction.base with(QuasiFunction.base f, QuasiFunction.base g) {
         // f: A -> B, g: C -> D, fg: C -> (D as A) -> B
-
-        // System.out.println(getGenericTypes.invoke(f)[0]);
-
-        Class<?> gclazz = g.getClass().getInterfaces()[0];
-
-        // String name = fclazz.getSimpleName();
-        String name = gclazz.getSimpleName();
-
-        if (name.startsWith("zero")) {
-            return new QuasiFunction.zero<Object>() {
-                @Override
-                public Object invoke() {
-                    Object gin = QuasiFunction.invokeUniversal(g);
-                    QuasiFunction.invokeUniversal(f, gin);
-                    return true;
-                }
-            };
-        }
-        
-        return new QuasiFunction.any<Object>() {
-            @Override
-            public Object invoke(Object... args) {
-                Object gin = QuasiFunction.invokeUniversal(g, args);
-                return QuasiFunction.invokeUniversal(f, gin);
-            }
-        };
-
+        // getGenericTypes.invoke(f)[0]
+        Class<?> clazz = g.getClass().getInterfaces()[0];
+        return clazz.getSimpleName().startsWith("zero")
+            ? (zero<Object>) () -> invokeUniversal(f, invokeUniversal(g))
+            : (any<Object>) args -> invokeUniversal(f, invokeUniversal(g, args));
+        //
     }
 
 }

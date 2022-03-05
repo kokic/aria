@@ -2,8 +2,8 @@ import quasi.*;
 
 import static quasi.Ind.index;
 
-public class Main
-{
+public class Main {
+
 	public static final QuasiFunction.one_bool<Object> println = new QuasiFunction.one_bool<Object>() {
 		@Override
 		public boolean invoke(Object arg) {
@@ -12,15 +12,12 @@ public class Main
 		}
 	};
 	
-	public static final QuasiFunction.any_void foreach = new QuasiFunction.any_void() {
-		@Override
-		public void invoke(Object... args) {
-			QuasiExpress.pass(index.clear());
-			while ( QuasiExpress.keep(index.less(args.length)) && 
-			        QuasiExpress.keep(index.println.invoke(args)) && 
-				    QuasiExpress.pass(index.increase()) ) 
-			{}
-		}
+	public static final QuasiFunction.any_void foreach = args -> {
+		QuasiExpress.pass(index.clear());
+		while ( QuasiExpress.keep(index.less(args.length)) && 
+		        QuasiExpress.keep(index.println.invoke(args)) && 
+			    QuasiExpress.pass(index.increase()) ) 
+		{}
 	};
 	
 	
@@ -30,15 +27,24 @@ public class Main
 		QuasiFunction.invokeUniversal(println, "good");
 		
 		System.out.println(">>> foreach: ");
-		QuasiFunction.invokeUniversal(foreach, 1, 5, 3);
+		// QuasiFunction.invokeUniversal(foreach, 1, 5, 3);
+		foreach.invoke((Object[]) Main.class.getMethods());
+		QuasiFunction.invokeUniversal(foreach, (Object[]) Main.class.getMethods());
 		
+		// int value = 2; 
 		
-		int value = 2; 
-		// coodition ? left() : right();
-		QuasiExpress.expr((5 > 3
+		/* 
+		coodition ? left : right;
+
+		QuasiExpress.expr((coodition
+		    && QuasiExpress.pass(left))
+			|| QuasiExpress.pass(right)); 
+		*/
+
+		/* QuasiExpress.expr((5 > 3
 			&& QuasiExpress.pass(++value)) 
-			|| QuasiExpress.pass(--value));
+			|| QuasiExpress.pass(--value)); */
 		
-		System.out.println("value: " + value);
+		// System.out.println("value: " + value);
 	}
 }
