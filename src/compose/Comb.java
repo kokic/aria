@@ -20,11 +20,20 @@ public class Comb {
     public static QuasiFunction.base with(QuasiFunction.base f, QuasiFunction.base g) {
         // f: A -> B, g: C -> D, fg: C -> (D as A) -> B
         // getGenericTypes.invoke(f)[0]
+        
         Class<?> clazz = g.getClass().getInterfaces()[0];
         return clazz.getSimpleName().startsWith("zero")
             ? (zero<Object>) () -> invokeUniversal(f, invokeUniversal(g))
             : (any<Object>) args -> invokeUniversal(f, invokeUniversal(g, args));
         //
     }
+
+    public static QuasiFunction.base with(QuasiFunction.base... fs) {
+        QuasiFunction.base phase = fs[fs.length - 1];
+        for (int i = fs.length - 2; i > -1; --i)
+            phase = with(fs[i], phase);
+        return phase;
+    }
+
 
 }

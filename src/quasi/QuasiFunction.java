@@ -57,17 +57,21 @@ public class QuasiFunction {
         invoke.setAccessible(true);
         params = invoke.getParameters();
         
-        boolean embed = params.length == 1 && args.length > 1;
+        boolean embed = (params.length == 1 && args.length > 1)
+                || invoke.toString().contains("Lambda");
 
         try {
 
             expr( keep(params.length)
-              &&  pass(pass(vararg = params[0].isVarArgs() || embed)
+              &&  pass(pass(vararg = invoke.isVarArgs() || embed)
               &&  pass(result = invoke.invoke(func, 
                   cond(vararg, new Object[] { args }, args ) )))
               ||  pass(result = invoke.invoke(func)) );
 
         } catch (Exception e) {
+            System.out.println("embed: " + embed + ", vararg: " + vararg);
+            System.out.println("param_0: " + params[0].getType() + ", arg_0: " + args[0].getClass());
+            System.out.println(invoke);
             e.printStackTrace();
         }
 
