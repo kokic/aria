@@ -14,7 +14,7 @@ public class Comb {
     // instance : QuasiFunction.base -> Type[]
     public static final QuasiFunction.any<Type[]> getGenericTypes = (
         Object... args) -> ((ParameterizedType) (args[0]).getClass()
-                .getGenericInterfaces()[0])
+                .getGenericInterfaces()[args.length == 1 ? 0 : (int) args[1]])
                 .getActualTypeArguments();
 
     public static QuasiFunction.base with(QuasiFunction.base f, QuasiFunction.base g) {
