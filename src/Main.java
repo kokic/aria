@@ -14,9 +14,9 @@ public class Main {
 	
 	public static final QuasiFunction.any_void foreach = args -> {
 		QuasiExpress.pass(index.clear());
-		while ( QuasiExpress.keep(index.less(args.length)) && 
-		        QuasiExpress.keep(index.println.invoke(args)) && 
-			    QuasiExpress.pass(index.increase()) ) 
+		while ( QuasiExpress.keep(index.less(args.length)) 
+		  &&    QuasiExpress.keep(index.println.invoke(args))
+		  &&    QuasiExpress.pass(index.increase()) ) 
 		{}
 	};
 	
