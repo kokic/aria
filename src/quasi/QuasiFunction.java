@@ -1,6 +1,5 @@
 package quasi;
 
-import static quasi.Ind.index;
 import static quasi.QuasiExpress.cond;
 import static quasi.QuasiExpress.expr;
 import static quasi.QuasiExpress.keep;
@@ -38,8 +37,8 @@ public class QuasiFunction {
         // expand for (...) as (Object[]
         // System.out.println(args.length);
         // System.out.println(args[0].getClass().isArray());
-        //if (args.length == 1 && args[0].getClass().isArray())
-          //  args = (Object[]) args[0];
+        // if (args.length == 1 && args[0].getClass().isArray())
+        // args = (Object[]) args[0];
 
         Method[] methods = func.getClass().getMethods();
         Method invoke = null;
@@ -47,6 +46,7 @@ public class QuasiFunction {
         boolean vararg = false;
         Parameter[] params = null;
 
+        Ind index = new Ind(0);
         index.clear();
         while ( keep(index.less(methods.length)) 
           && !( keep(methods[index.value()].toString().contains("invoke")) 
@@ -57,8 +57,7 @@ public class QuasiFunction {
         invoke.setAccessible(true);
         params = invoke.getParameters();
         
-        boolean embed = (params.length == 1 && args.length > 1)
-                || invoke.toString().contains("Lambda");
+        boolean embed = params.length == 1 && args.length > 1;
 
         try {
 

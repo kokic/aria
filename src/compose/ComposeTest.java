@@ -21,9 +21,10 @@ public class ComposeTest {
 
     public static void main(String[] args) {
 
-        QuasiFunction.invokeUniversal(out, "out-test");
-        var res = Comb.with(out, out);
-        System.out.println(QuasiFunction.invokeUniversal(res, "exec" ));
+        // QuasiFunction.invokeUniversal(out, "out-test");
+        var res = Comb.with(out, out, get);
+        var result = QuasiFunction.invokeUniversal(res);
+        System.out.println("final result: " + result);
         
     }
     
