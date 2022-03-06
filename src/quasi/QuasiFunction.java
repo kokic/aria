@@ -23,7 +23,19 @@ public class QuasiFunction {
     public interface zero<t> extends base { t invoke(); }
     public interface zero_void extends base { void invoke(); }
     public interface zero_bool extends base { boolean invoke(); }
-    
+
+// public: 
+    public static final QuasiFunction.any<one_void<base>> foreach = args -> {
+        return (one_void<base>) apply -> {
+            Ind index = new Ind();
+            QuasiExpress.pass(index.clear());
+            while (QuasiExpress.keep(index.less(args.length))
+                && QuasiExpress.keep(index.custom(apply, args))
+                && QuasiExpress.pass(index.increase())) 
+            {};
+        };
+    };
+
     public static final one_bool<Object> println = new one_bool<Object>() {
         @Override
         public boolean invoke(Object arg) {
@@ -34,19 +46,13 @@ public class QuasiFunction {
 
     public static Object invokeUniversal(base func, Object... args) {
 
-        // expand for (...) as (Object[]
-        // System.out.println(args.length);
-        // System.out.println(args[0].getClass().isArray());
-        // if (args.length == 1 && args[0].getClass().isArray())
-        // args = (Object[]) args[0];
-
         Method[] methods = func.getClass().getMethods();
         Method invoke = null;
         Object result = null;
         boolean vararg = false;
         Parameter[] params = null;
 
-        Ind index = new Ind(0);
+        Ind index = new Ind();
         index.clear();
         while ( keep(index.less(methods.length)) 
           && !( keep(methods[index.value()].toString().contains("invoke")) 

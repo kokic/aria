@@ -11,9 +11,11 @@ public class Ind {
 	
 // public: 
 	public int set(int val) { return value = val; }
+	public int step(int step) { value += step; return value; }
 	public int value() { return value; }
 	public int clear() { value = 0; return value; }
 	public int increase() { ++value; return value; }
+	public int decrease() { --value; return value; }
 	
 	public QuasiFunction.one_bool<Object[]> println = args -> {
 		System.out.println(args[this.value]);
@@ -21,11 +23,11 @@ public class Ind {
 	};
 
 	public boolean custom(base apply, Object[] args) {
-		// QuasiFunction.invokeUniversal(apply, args[this.value]);
 		QuasiFunction.invokeUniversal(apply, args[this.value]);
 		return true;
 	};
 // public: 
+    public Ind() {}
 	public Ind(int value) { this.value = value; }
 	
 }

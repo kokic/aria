@@ -36,4 +36,29 @@ public class Comb {
     }
 
 
+    public static final Jhon23 join(Object... elements) {
+        return (Jhon23) applies -> {
+            Object[] array = new Object[2 * elements.length - 1];
+            for (int index = 0; index < elements.length - 1; ++index) {
+                array[index * 2] = elements[index];
+                array[index * 2 + 1] = applies[0].invoke();
+            }
+            array[array.length - 1] = elements[elements.length - 1];
+
+            Object last = null;
+            if (applies.length > 1 && (last = applies[1].invoke()) instanceof String)
+                array[array.length - 1] = array[array.length - 1] + (String) last;
+
+            return array;
+        };
+    }
+
+    public interface ZeroObject extends zero<Object> {}
+    /* 
+    applies: 
+        apply to between, 
+        apply to last, 
+    */
+    public interface Jhon23 { Object[] toArray(ZeroObject... applies); }
+    
 }
