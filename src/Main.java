@@ -10,17 +10,18 @@ import quasi.Unsafe;
 public class Main {
 
     public static void main(String[] args) {
-        
+
         System.out.println(">>> test: ");
         invokeUniversal(println, "good");
 
         System.out.println(">>> foreach: ");
         var state = foreach.invoke(Comb.join(233, 514, 0x7a96)
-                .toArray(() -> " ", () -> "\n"));
+                .apply(() -> " ", () -> "\n"));
         state.invoke((one_void<Object>) elem -> System.out.print(elem));
 
-        state = Unsafe.as(invokeUniversal(foreach, Comb.join(1, 5, 3)
-                .toArray(() -> " ", () -> "\n")));
+        state = Unsafe.as(invokeUniversal(foreach, Comb.join(Comb.each(1, 5, 3)
+                .apply(x -> (int) x - 3))
+                .apply(() -> " ", () -> "\n" )));
         state.invoke((one_void<Object>) elem -> System.out.print(elem));
 
         foreach.invoke((Object[]) any.class.getMethods()).invoke(println);

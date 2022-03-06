@@ -5,8 +5,10 @@ import static quasi.QuasiFunction.invokeUniversal;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import quasi.Ind;
 import quasi.QuasiFunction;
 import quasi.QuasiFunction.any;
+import quasi.QuasiFunction.one;
 import quasi.QuasiFunction.zero;
 
 public class Comb {
@@ -30,35 +32,53 @@ public class Comb {
 
     public static QuasiFunction.base with(QuasiFunction.base... fs) {
         QuasiFunction.base phase = fs[fs.length - 1];
-        for (int i = fs.length - 2; i > -1; --i)
-            phase = with(fs[i], phase);
+        for (Ind index = new Ind(fs.length - 2); index.great(-1); index.decrease())
+            phase = with(fs[index.value()], phase);
         return phase;
     }
 
 
+    public static final Haidilao each(Object... elements) {
+        return apply -> {
+            Object[] array = new Object[elements.length];
+            for (int index = 0; index < elements.length; ++index)
+                array[index] = apply.invoke(elements[index]);
+            return array;
+        };
+    }
+
+    public interface Haidilao { Object[] apply(one<Object, Object> apply); }
+
     public static final Jhon23 join(Object... elements) {
-        return (Jhon23) applies -> {
+        return applies -> {
             Object[] array = new Object[2 * elements.length - 1];
+            final int alien = array.length - 1;
             for (int index = 0; index < elements.length - 1; ++index) {
                 array[index * 2] = elements[index];
                 array[index * 2 + 1] = applies[0].invoke();
             }
-            array[array.length - 1] = elements[elements.length - 1];
+            array[alien] = elements[elements.length - 1];
 
-            Object last = null;
-            if (applies.length > 1 && (last = applies[1].invoke()) instanceof String)
-                array[array.length - 1] = array[array.length - 1] + (String) last;
+            if (applies.length > 1) {
+                Object last = applies[1].invoke();
+                Object elem = array[alien];
+                if (last instanceof String)
+                    array[alien] = elem + (String) last;
+                else if (last instanceof Integer && elem instanceof Integer)
+                    array[alien] = (Integer) elem + (Integer) last;
+            }
 
             return array;
         };
     }
 
     public interface ZeroObject extends zero<Object> {}
+
     /* 
     applies: 
         apply to between, 
         apply to last, 
     */
-    public interface Jhon23 { Object[] toArray(ZeroObject... applies); }
+    public interface Jhon23 { Object[] apply(ZeroObject... applies); }
     
 }

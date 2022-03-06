@@ -7,8 +7,9 @@ public class Ind {
 	private int value;
 	
 // public: 
-	public boolean less(int then) { return value < then; }
-	
+	public boolean less(int than) { return value < than; }
+	public boolean great(int than) { return value > than; }
+
 // public: 
 	public int set(int val) { return value = val; }
 	public int step(int step) { value += step; return value; }
