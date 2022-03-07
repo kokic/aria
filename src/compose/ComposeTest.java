@@ -1,30 +1,18 @@
 package compose;
 
 import quasi.QuasiFunction;
+import quasi.QuasiFunction.one_void;
+import quasi.QuasiFunction.zero;
 
 public class ComposeTest {
-
-    public static final QuasiFunction.one<Object, String> out = new QuasiFunction.one<Object,String>() {
-        @Override
-        public String invoke(Object arg) {
-            System.out.println(arg);
-            return "end";
-        }
-    };
-
-    public static final QuasiFunction.zero<String> get = new QuasiFunction.zero<String>() {
-        @Override
-        public String invoke() {
-            return "out";
-        }
-    };
-
+    
     public static void main(String[] args) {
-
-        // QuasiFunction.invokeUniversal(out, "out-test");
-        var res = Comb.with(out, out, get);
-        var result = QuasiFunction.invokeUniversal(res);
-        System.out.println("final result: " + result);
+        
+        var f = (one_void<String>) in -> System.out.println(in);
+        var g = (zero<String>) () -> "Hello World";
+        var fg = Comb.with(f, g);
+        
+        QuasiFunction.invokeUniversal(fg);
         
     }
     

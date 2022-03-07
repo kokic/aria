@@ -28,9 +28,8 @@ public class QuasiFunction {
     public static final QuasiFunction.any<one_void<base>> foreach = args -> {
         return (one_void<base>) apply -> {
             Ind index = new Ind();
-            QuasiExpress.pass(index.clear());
             while (QuasiExpress.keep(index.less(args.length))
-                && QuasiExpress.keep(index.custom(apply, args))
+                && QuasiExpress.pass(index.custom(apply, args))
                 && QuasiExpress.pass(index.increase())) 
             {};
         };

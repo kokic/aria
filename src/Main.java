@@ -15,36 +15,16 @@ public class Main {
         invokeUniversal(println, "good");
 
         System.out.println(">>> foreach: ");
-        var state = foreach.invoke(Comb.join(233, 514, 0x7a96)
-                .apply(() -> " ", () -> "\n"));
+        var state = foreach.invoke(Comb.join(1, 5, 3).apply(() -> " ", () -> "\n"));
         state.invoke((one_void<Object>) elem -> System.out.print(elem));
 
         state = Unsafe.as(invokeUniversal(foreach, Comb.join(Comb.each(1, 5, 3)
                 .apply(x -> (int) x - 3))
-                .apply(() -> " ", () -> "\n" )));
+                .apply(() -> " ", () -> "\n")));
         state.invoke((one_void<Object>) elem -> System.out.print(elem));
 
+        foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(println);
         foreach.invoke((Object[]) any.class.getMethods()).invoke(println);
 
-        // QuasiFunction.invokeUniversal(foreach, (Object[])
-        // QuasiFunction.any.class.getMethods());
-
-        // int value = 2;
-
-        /*
-         * coodition ? left : right;
-         * 
-         * QuasiExpress.expr((coodition
-         * && QuasiExpress.pass(left))
-         * || QuasiExpress.pass(right));
-         */
-
-        /*
-         * QuasiExpress.expr((5 > 3
-         * && QuasiExpress.pass(++value))
-         * || QuasiExpress.pass(--value));
-         */
-
-        // System.out.println("value: " + value);
     }
 }

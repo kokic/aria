@@ -1,6 +1,7 @@
 package compose;
 
 import static quasi.QuasiFunction.invokeUniversal;
+import static quasi.QuasiExpress.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -38,17 +39,29 @@ public class Comb {
     }
 
 
+    public interface Haidilao { Object[] apply(one<Object, Object> apply); }
+
     public static final Haidilao each(Object... elements) {
         return apply -> {
             Object[] array = new Object[elements.length];
-            for (int index = 0; index < elements.length; ++index)
-                array[index] = apply.invoke(elements[index]);
+            Ind index = new Ind();
+            while (keep(index.less(elements.length))
+                && pass(index.assign(array, apply.invoke(elements[index.value()])))
+                && pass(index.increase())) 
+            {};
             return array;
         };
     }
 
-    public interface Haidilao { Object[] apply(one<Object, Object> apply); }
+    public interface ZeroObject extends zero<Object> {}
 
+    /* 
+    applies: 
+        apply to between, 
+        apply to last, 
+    */
+    public interface Jhon23 { Object[] apply(ZeroObject... applies); }
+    
     public static final Jhon23 join(Object... elements) {
         return applies -> {
             Object[] array = new Object[2 * elements.length - 1];
@@ -71,14 +84,5 @@ public class Comb {
             return array;
         };
     }
-
-    public interface ZeroObject extends zero<Object> {}
-
-    /* 
-    applies: 
-        apply to between, 
-        apply to last, 
-    */
-    public interface Jhon23 { Object[] apply(ZeroObject... applies); }
     
 }
