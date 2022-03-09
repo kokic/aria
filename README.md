@@ -14,6 +14,13 @@ var g = (zero<String>) () -> "Hello World";
 var fg = Comb.with(f, g);
 QuasiFunction.invokeUniversal(fg);
 ```
+or
+```
+...
+var id = (one<Object, Object>) x -> x;
+var fg = Comb.with(f, id, id, id, g);
+QuasiFunction.invokeUniversal(fg);
+```
 ```
 Hello World
 ```
@@ -48,7 +55,7 @@ while (keep(index.less(elements.length))
 ---
 
 ## **fancy print**
-### *eg.*
+### *e.g.*
 Note: 
 `quasi.QuasiFunction.foreach: any<one_void<base>>`, 
 `quasi.QuasiFunction.println: one_bool<Object>`
@@ -62,7 +69,7 @@ Homological Algebra
 public abstract java.lang.Object quasi.QuasiFunction$any.invoke(java.lang.Object[])
 ```
 
-### *eg.*
+### *e.g.*
 Note: `foreach.invoke: Object... -> one_void<base>`
 ```
 var state = foreach.invoke(Comb.join(Comb.each(1, 5, 3)
