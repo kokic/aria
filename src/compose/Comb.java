@@ -9,12 +9,10 @@ import java.lang.reflect.Type;
 
 import quasi.Ind;
 import quasi.QuasiFunction;
-import quasi.Unsafe;
 import quasi.QuasiFunction.any;
 import quasi.QuasiFunction.one;
 import quasi.QuasiFunction.one_bool;
 import quasi.QuasiFunction.zero;
-import quasi.QuasiFunction.zero_bool_u;
 
 public class Comb {
     
