@@ -24,6 +24,9 @@ public class QuasiFunction {
     public interface zero_void extends base { void invoke(); }
     public interface zero_bool extends base { boolean invoke(); }
 
+    public interface zero_u extends base { <u> u invoke(); }
+    public interface zero_bool_u extends base { <u> boolean invoke(); }
+
 // public: 
     public static final QuasiFunction.any<one_void<base>> foreach = args -> {
         return (one_void<base>) apply -> {
@@ -31,7 +34,7 @@ public class QuasiFunction {
             while (QuasiExpress.keep(index.less(args.length))
                 && QuasiExpress.pass(index.custom(apply, args))
                 && QuasiExpress.pass(index.increase())) 
-            {};
+            {}
         };
     };
 

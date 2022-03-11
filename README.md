@@ -81,4 +81,28 @@ state.invoke((one_void<Object>) elem -> System.out.print(elem));
 -2 2 0
 ```
 
+## **local quasi function**
+Note: `quasi.QuasiFunction.zero_bool_u`
+```
+zero_bool_u localInstanceof = new zero_bool_u() {
+    public <u> boolean invoke() {
+        return Unsafe.<u>as(last) instanceof u 
+            && Unsafe.<u>as(elem) instanceof u;
+    }
+};
+...
+value = /* -------- space -------- */
+          localInstanceof.<Integer>invoke()
+        ? (Integer) elem + (Integer) last
 
+        : localInstanceof.<Double>invoke()
+        ? (Double) elem + (Double) last
+
+        : localInstanceof.<Long>invoke()
+        ? (Long) elem + (Long) last
+
+        : localInstanceof.<Float>invoke()
+        ? (Float) elem + (Float) last
+                        ...
+        : (String) elem + last;
+```

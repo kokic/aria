@@ -1,6 +1,7 @@
 package quasi;
 
 import quasi.QuasiFunction.base;
+import quasi.QuasiFunction.one;
 
 public class Ind {
 // private: 
@@ -19,6 +20,11 @@ public class Ind {
 	public int increase() { ++value; return value; }
 	public int decrease() { --value; return value; }
 	public int assign(Object[] array, Object target) { array[this.value] = target; return value; }
+	
+	public int with(Object[] array, one<Integer, Integer> indexApply, Object target) {
+		array[indexApply.invoke(this.value)] = target;
+		return value;
+	}
 
 	public QuasiFunction.one_bool<Object[]> println = args -> {
 		System.out.println(args[this.value]);

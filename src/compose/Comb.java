@@ -1,16 +1,19 @@
 package compose;
 
+import static quasi.QuasiExpress.keep;
+import static quasi.QuasiExpress.pass;
 import static quasi.QuasiFunction.invokeUniversal;
-import static quasi.QuasiExpress.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import quasi.Ind;
 import quasi.QuasiFunction;
+import quasi.Unsafe;
 import quasi.QuasiFunction.any;
 import quasi.QuasiFunction.one;
 import quasi.QuasiFunction.zero;
+import quasi.QuasiFunction.zero_bool_u;
 
 public class Comb {
     
@@ -33,8 +36,11 @@ public class Comb {
 
     public static QuasiFunction.base with(QuasiFunction.base... fs) {
         QuasiFunction.base phase = fs[fs.length - 1];
-        for (Ind index = new Ind(fs.length - 2); index.great(-1); index.decrease())
-            phase = with(fs[index.value()], phase);
+        Ind index = new Ind(fs.length - 2);
+        while (keep(index.great(-1)) 
+            && pass(phase = with(fs[index.value()], phase))
+            && pass(index.decrease()))
+        {}
         return phase;
     }
 
@@ -66,21 +72,40 @@ public class Comb {
         return applies -> {
             Object[] array = new Object[2 * elements.length - 1];
             final int alien = array.length - 1;
-            for (int index = 0; index < elements.length - 1; ++index) {
-                array[index * 2] = elements[index];
-                array[index * 2 + 1] = applies[0].invoke();
-            }
-            array[alien] = elements[elements.length - 1];
+            final int blien = elements.length - 1;
 
+            Ind index = new Ind();
+            while (keep(index.less(blien))
+                && pass(index.with(array, x -> x * 2, index.of(elements)))
+                && pass(index.with(array, x -> x * 2 + 1, applies[0].invoke()))
+                && pass(index.increase()))
+            {}
+            array[alien] = elements[blien];
+            
             if (applies.length > 1) {
                 Object last = applies[1].invoke();
                 Object elem = array[alien];
-                if (last instanceof String)
-                    array[alien] = elem + (String) last;
-                else if (last instanceof Integer && elem instanceof Integer)
-                    array[alien] = (Integer) elem + (Integer) last;
-            }
 
+                zero_bool_u localInstanceof = new zero_bool_u() {
+                    public <u> boolean invoke() {
+                        return Unsafe.<u>as(last) instanceof u
+                            && Unsafe.<u>as(elem) instanceof u;
+                    }
+                };
+
+                array[alien] = /* -------- space -------- */
+                          localInstanceof.<Integer>invoke()
+                        ? (Integer) elem + (Integer) last
+                        : localInstanceof.<Double>invoke()
+                        ? (Double) elem + (Double) last
+                        : localInstanceof.<Long>invoke()
+                        ? (Long) elem + (Long) last
+                        : localInstanceof.<Float>invoke()
+                        ? (Float) elem + (Float) last
+                        : (String) elem + last;
+                // 
+            
+            }
             return array;
         };
     }
