@@ -1,6 +1,5 @@
 package quasi;
 
-import quasi.QuasiFunction.base;
 import quasi.QuasiFunction.one;
 
 public class Ind {
@@ -26,12 +25,10 @@ public class Ind {
 		return value;
 	}
 
-	public QuasiFunction.one_bool<Object[]> println = args -> {
-		System.out.println(args[this.value]);
-		return true;
-	};
+	public QuasiFunction.one_bool<Object[]> println = args -> QuasiExpress
+	        .pack(() -> System.out.println(args[this.value]));
 
-	public boolean custom(base apply, Object[] args) {
+	public boolean custom(Object apply, Object[] args) {
 		QuasiFunction.invokeUniversal(apply, args[this.value]);
 		return true;
 	};

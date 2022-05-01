@@ -1,3 +1,4 @@
+
 package quasi;
 
 public class QuasiExpress {
@@ -5,12 +6,26 @@ public class QuasiExpress {
 	public static Object dot(Object... terms) {
 		return terms[terms.length - 1];
 	}
+
+	public interface Throwbox { void exec() throws Throwable; }
+
+	public static boolean slience(Throwbox box) {
+		try { box.exec(); return true; }
+		catch (Throwable tr) { tr.printStackTrace(); return false; }
+	}
 	
 	public static <type> type cond(Object test, type left, type right) {
 		return keep(test) ? left : right;
 	}
 	
 	public static boolean pass(Object expr) { return true; }
+
+	public static final class once {  }
+
+	public static boolean pack(QuasiFunction.zero_void base) {
+		base.invoke();
+		return true;
+	}
 	
 	public static boolean keep(Object test) {
 		if (test.getClass() == Boolean.class)

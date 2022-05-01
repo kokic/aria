@@ -5,6 +5,7 @@ import static quasi.QuasiExpress.expr;
 import static quasi.QuasiExpress.keep;
 import static quasi.QuasiExpress.pass;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
@@ -28,8 +29,8 @@ public class QuasiFunction {
     public interface zero_bool_u extends base { <u> boolean invoke(); }
 
 // public: 
-    public static final QuasiFunction.any<one_void<base>> foreach = args -> {
-        return (one_void<base>) apply -> {
+    public static final QuasiFunction.any<one_void<? super Object>> foreach = args -> {
+        return (one_void<? super Object>) apply -> {
             Ind index = new Ind();
             while (QuasiExpress.keep(index.less(args.length))
                 && QuasiExpress.pass(index.custom(apply, args))
@@ -38,16 +39,16 @@ public class QuasiFunction {
         };
     };
 
-    public static final one_bool<Object> println = new one_bool<Object>() {
-        @Override
-        public boolean invoke(Object arg) {
-            System.out.println(arg);
-            return true;
-        }
-    };
+    public static final one_bool<Object> println = arg -> QuasiExpress
+            .pack(() -> System.out.println(arg));
+    
+    public static Object invokeUniversal(Object func, Object... args) {
+        if (func instanceof base)
+            return invokeBase((base) func, args);
+        return null;
+    }
 
-    public static Object invokeUniversal(base func, Object... args) {
-
+    public static Object invokeBase(base func, Object... args) {
         Method[] methods = func.getClass().getMethods();
         Method invoke = null;
         Object result = null;
@@ -62,27 +63,25 @@ public class QuasiFunction {
           &&    pass(index.increase()) ) 
         {}
 
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+
         invoke.setAccessible(true);
         params = invoke.getParameters();
         
         boolean embed = params.length == 1 && args.length > 1;
 
-        try {
-
-            expr( keep(params.length)
-              &&  pass(pass(vararg = invoke.isVarArgs() || embed)
-              &&  pass(result = invoke.invoke(func, 
-                  cond(vararg, new Object[] { args }, args ) )))
-              ||  pass(result = invoke.invoke(func)) );
-
-        } catch (Exception e) {
-            System.out.println("embed: " + embed + ", vararg: " + vararg);
-            System.out.println("param_0: " + params[0].getType() + ", arg_0: " + args[0].getClass());
-            System.out.println(invoke);
-            e.printStackTrace();
-        }
-
-        return result;
+        final var finals = new Object[] { vararg, result, invoke, params.length };
+        QuasiExpress.slience(() -> {
+            var invoke_ = (Method) finals[2];
+            var refl = lookup.unreflect(invoke_);
+            expr( keep(finals[3])
+              &&  pass(pass(finals[0] = invoke_.isVarArgs() || embed)
+              &&  pass(finals[1] = invoke_.invoke(func, 
+                  cond(finals[0], new Object[] { args }, args ) )))
+              ||  pass(finals[1] = refl.invoke(func)) );
+        });
+        
+        return finals[1];
     }
 
 }
