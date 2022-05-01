@@ -3,6 +3,37 @@ Perhaps the most unreadable, non maintainable, obscure java source code. This pr
 
 ---
 
+## **remarkable**
+### **qsort without ';'**
+This is just a small attempt, but in fact, as you can see, it is usually tricky to achieve this effect in Java, which means the abuse of some kind of expression. This example lacks practicability in various senses, it doesn't exist for practical application. It just shows that we can do such a thing.
+```
+public static void qsort(int[] alist, int first, int last) {
+    while (!pass(first < last && pack(() -> {
+        class Local {
+            static void invoke(int[] alist, int first, int last, int[] cap) {
+                while (!(pack(() -> {
+                    while (cap[1] < cap[2] 
+                    && pack(() -> { while (cap[1] < cap[2] 
+                        && alist[cap[2]] >= cap[0] 
+                        && pass(cap[2] -= 1)) {} }) 
+                    && pass(alist[cap[1]] = alist[cap[2]]) 
+                    && pack(() -> { while (cap[1] < cap[2] 
+                        && alist[cap[1]] < cap[0] 
+                        && pass(cap[1] += 1)) {} })
+                    && pass(alist[cap[2]] = alist[cap[1]])) {}
+                })
+                && pass(alist[cap[1]] = cap[0])
+                && pack(() -> qsort(alist, first, cap[1] - 1))
+                && pack(() -> qsort(alist, cap[1] + 1, last)) )) {}
+            }
+        }
+        while (!(pack(() -> Local.invoke(alist, first, last,
+                new int[] { alist[first], first, last })))) {}
+    }))) {}
+}
+```
+
+
 ## **basic examples**
 Here are some basic usages.
 
