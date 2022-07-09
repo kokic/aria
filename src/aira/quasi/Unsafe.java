@@ -1,4 +1,4 @@
-package quasi;
+package aira.quasi;
 
 public final class Unsafe {
 
