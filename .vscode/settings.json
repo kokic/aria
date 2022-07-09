@@ -3,5 +3,16 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
+    ], 
+    "java.completion.filteredTypes": [
+        "java.awt.*",
+        "java.rmi.*", 
+        "com.sun.tools.classfile.*",
+        "jdk.javadoc.internal.*", 
+        // "sun.*",
+        // "jdk.*",
+        // "org.graalvm.*",
+        // "io.micrometer.shaded.*"
+        "java.lang.StrictMath"
     ]
 }
