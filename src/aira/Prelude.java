@@ -5,16 +5,17 @@ import aira.quasi.QuasiFunction;
 import aira.quasi.QuasiFunction.any_t;
 import aira.quasi.QuasiFunction.base;
 import aira.quasi.QuasiFunction.one_bool;
+import aira.quasi.QuasiFunction.one_t;
 import aira.quasi.QuasiFunction.one_void;
 import aira.quasi.QuasiFunction.three_u;
+import aira.quasi.QuasiFunction.two_t;
 import aira.quasi.QuasiFunction.zero_t;
+import aira.quasi.QuasiFunction.zero_throw_t;
+import aira.quasi.QuasiFunction.zero_throw_void;
 import aira.quasi.QuasiFunction.zero_void;
 import aira.quasi.Unsafe;
 
 public final class Prelude {
-
-    public interface RunnableT { void run() throws Throwable; }
-	public interface RunnableE { void run() throws Exception; }
 
     public static final three_u<Boolean, Object, Object> delta = 
                     new three_u<Boolean, Object, Object>() {
@@ -37,25 +38,35 @@ public final class Prelude {
     public static final one_bool<zero_void> pack = inlineFunction ->
         pass.invoke(QuasiFunction.invoke(inlineFunction)); 
 
-    public static final one_void<RunnableT> ignoreThrowable = runnable -> {
-        try { runnable.run(); } catch (Throwable throwable) {}
+    public static final one_void<zero_throw_void> ignore = f -> {
+        try { f.invoke(); } catch (Throwable throwable) {}
     };
 
-    public static final one_void<RunnableT> ignoreThrowableTrial = runnable -> {
-        try { runnable.run(); } catch (Throwable throwable) {
+    public static final one_void<zero_throw_void> trial = f -> {
+        try { f.invoke(); } catch (Throwable throwable) {
             throwable.printStackTrace();
+        }
+    }; 
+
+    public interface Option extends two_t<zero_throw_t<Object>, zero_t<Object>, Object> {}
+    public static final Option option = (f, g) -> {
+        try { return f.invoke(); } catch (Throwable throwable) { 
+            return g.invoke();
         }
     };
 
-
+    public interface Eval extends one_t<zero_throw_t<Object>, Object> {}
+    public static final zero_t<Object> nil = () -> null;
+    public static final Eval eval = f -> option.invoke(f, nil);
+ 
 // Extend Functions ...
 
-    public static final any_t<one_void<? super Object>> foreach = args -> {
-        return (one_void<? super Object>) apply -> {
+    public static final any_t<one_void<base>> foreach = args -> {
+        return (one_void<base>) apply -> {
             Index index = new Index();
-            while (keep.invoke(index.less(args.length))
-                && pass.invoke(index.custom((base) apply, args))
-                && pass.invoke(index.increase())) 
+            while (keep.invoke(index.less.invoke(args.length))
+                && pass.invoke(index.apply.invoke(apply, args))
+                && pass.invoke(index.increase.invoke())) 
             {}
         };
     };
