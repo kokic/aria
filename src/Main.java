@@ -1,12 +1,10 @@
-import static aira.Blur.add;
-import static aira.Blur.array;
-import static aira.Blur.embed;
-import static aira.Prelude.foreach;
-import static aira.Prelude.print;
-import static aira.Prelude.println;
 
-import aira.quasi.QuasiFunction;
-import aira.quasi.QuasiFunction.any_t;
+import static aira.quasi.QuasiFunction.*;
+
+import aira.quasi.Comb;
+import aira.quasi.Unsafe;
+
+import static aira.Prelude.*;
 
 public class Main {
 
@@ -18,14 +16,15 @@ public class Main {
         System.out.println(Arrays.toString(alist));
         */
 
-        println.invoke(">>> test: ");
-        QuasiFunction.invoke(println, "good");
-
         System.out.println(">>> foreach: ");
-        var state = foreach.invoke(add(embed(array(1, 2, 3), " "), "\n"));
-        state.invoke(print);
-
+        var array = arr.invoke(1, 2, 3);
         
+        Aut<Object[]> embedSpace = xs -> embed.invoke(xs, " ");
+        Aut<Object[]> addLine = xs -> add.invoke(xs, "\n");
+        // any_t<Object> handle = Unsafe.as(Comb.with.invoke(addLine, embedSpace));
+        
+        var state = foreach.invoke((Object[]) invoke(embedSpace, cup.invoke(array)));
+        state.invoke(print);
 
         /*
         state = Unsafe.as(invokeBase(foreach, Comb.join(Comb.each(1, 5, 3)

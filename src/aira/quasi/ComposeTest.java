@@ -20,5 +20,5 @@ public class ComposeTest {
         fgX.invoke(157);
         QuasiFunction.invoke(fgX, 157);
     }
-    
+
 }

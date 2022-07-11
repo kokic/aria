@@ -5,7 +5,7 @@ import static aira.quasi.QuasiFunction.invoke;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import aira.Blur;
+import static aira.Prelude.*;
 import aira.quasi.QuasiFunction.any_t;
 import aira.quasi.QuasiFunction.base;
 import aira.quasi.QuasiFunction.two_t;
@@ -21,11 +21,11 @@ public class Comb {
                 .getActualTypeArguments();
 
     // f: Y -> Z, g: X -> Y, fg: X -> Z
-    public static two_t<base, base, base> with = (f, g) -> g instanceof zero
+    public static final two_t<base, base, base> with = (f, g) -> g instanceof zero
             ? (zero_t<Object>) () -> invoke(f, invoke(g))
             : (any_t<Object>) args -> invoke(f, invoke(g, args));
 
-    public static any_t<base> withs = 
-       fs -> (base) Blur.foldr(with, Blur.last(fs), Blur.lizard(fs));
-
+    public static final any_t<base> withs = fs -> (base) 
+        foldr.invoke(with, last.invoke(fs), lizard.invoke(fs));
+        
 }

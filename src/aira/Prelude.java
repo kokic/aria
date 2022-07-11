@@ -1,19 +1,11 @@
 package aira;
 
+import java.util.Arrays;
+
 import aira.quasi.Index;
-import aira.quasi.QuasiFunction;
-import aira.quasi.QuasiFunction.any_t;
-import aira.quasi.QuasiFunction.base;
-import aira.quasi.QuasiFunction.one_bool;
-import aira.quasi.QuasiFunction.one_t;
-import aira.quasi.QuasiFunction.one_void;
-import aira.quasi.QuasiFunction.three_u;
-import aira.quasi.QuasiFunction.two_t;
-import aira.quasi.QuasiFunction.zero_t;
-import aira.quasi.QuasiFunction.zero_throw_t;
-import aira.quasi.QuasiFunction.zero_throw_void;
-import aira.quasi.QuasiFunction.zero_void;
 import aira.quasi.Unsafe;
+
+import static aira.quasi.QuasiFunction.*;
 
 public final class Prelude {
 
@@ -36,7 +28,7 @@ public final class Prelude {
     public static final one_bool<Object> pass = x -> true;
     
     public static final one_bool<zero_void> pack = inlineFunction ->
-        pass.invoke(QuasiFunction.invoke(inlineFunction)); 
+        pass.invoke(invoke(inlineFunction)); 
 
     public static final one_void<zero_throw_void> ignore = f -> {
         try { f.invoke(); } catch (Throwable throwable) {}
@@ -46,7 +38,7 @@ public final class Prelude {
         try { f.invoke(); } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-    }; 
+    };
 
     public interface Option extends two_t<zero_throw_t<Object>, zero_t<Object>, Object> {}
     public static final Option option = (f, g) -> {
@@ -54,11 +46,85 @@ public final class Prelude {
             return g.invoke();
         }
     };
-
     public interface Eval extends one_t<zero_throw_t<Object>, Object> {}
     public static final zero_t<Object> nil = () -> null;
     public static final Eval eval = f -> option.invoke(f, nil);
- 
+
+    public static final Option trialOption = (f, g) -> {
+        try { return f.invoke(); } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            return g.invoke();
+        }
+    };
+    public static final Eval trialEval = f -> trialOption.invoke(f, nil);
+
+// Array Functions ...
+    public static final one_t<Object[], Object> head = xs -> xs[0];
+    public static final one_t<Object[], Object> last = xs -> xs[xs.length - 1];
+    public static final Aut<Object[]> lizard = xs -> Arrays.copyOf(xs, xs.length - 1);
+    public static final Aut<Object[]> tail = xs -> Arrays.copyOfRange(xs, 1, xs.length - 1);
+
+    public static final two_t<Aut<Object>, Object[], Object[]> map = (f, xs) -> {
+        var rs = new Object[xs.length];
+        for (int index = 0; index < rs.length; index++)
+            rs[index] = f.invoke(xs[index]);
+        return rs;
+    };
+
+    public interface Fold extends three_t<two_t<?, ?, ?>, Object, Object[], Object> {}
+    public static final Fold foldl = (f, init, xs) -> {
+        Object phase = init;
+        for (int index = 0; index < xs.length; index++)
+            phase = f.invoke(Unsafe.as(phase), Unsafe.as(xs[index]));
+        return phase;
+    };
+    public static final Fold foldr = (f, init, xs) -> {
+        Object phase = init;
+        for (int index = xs.length - 1; index > -1; index--)
+            phase = f.invoke(Unsafe.as(xs[index]), Unsafe.as(phase));
+        return phase;
+    };
+
+    public static final Lift<Integer> range = (first, last) -> {
+        Integer[] xs = new Integer[last - first + 1];
+        for (int index = 0; index < xs.length; index++)
+            xs[index] = first + index;
+        return xs;
+    };
+
+    public static final Lift<Object[]> zip = (xs, ys) -> {
+        Object[][] pairs = new Object[xs.length][2];
+        for (int index = 0; index < xs.length; index++) {
+            pairs[index][0] = xs[index];
+            pairs[index][1] = ys[index];
+        }
+        return pairs;
+    };
+
+    public static final Cup<Object[]> indexed = xs -> 
+        zip.invoke(xs, range.invoke(0, xs.length - 1));
+
+    public static final any_t<Object[]> arr = xs -> xs;
+
+    public static final Cup<Object> cup = x -> new Object[] { x };
+
+    public static final Clip<Object> add = (xs, elem) -> {
+        Object[] array = Arrays.copyOf(xs, xs.length + 1);
+        array[xs.length] = elem;
+        return array;
+    };
+
+    public static final Clip<Object> embed = (xs, embed) -> {
+        final int supIndex = xs.length - 1;
+        Object[] array = new Object[2 * xs.length - 1];
+        for (int index = 0; index < supIndex; index++) {
+            array[index * 2] = xs[index];
+            array[index * 2 + 1] = embed;
+        }
+        array[array.length - 1] = xs[supIndex];
+        return array;
+    };
+
 // Extend Functions ...
 
     public static final any_t<one_void<base>> foreach = args -> {
