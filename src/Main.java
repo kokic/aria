@@ -1,10 +1,16 @@
 
-import static aira.quasi.QuasiFunction.*;
+import static aira.Prelude.add;
+import static aira.Prelude.embed;
+import static aira.Prelude.list;
+import static aira.Prelude.map;
+import static aira.Prelude.pack;
+
+import java.util.List;
 
 import aira.quasi.Comb;
+import aira.quasi.QuasiFunction.Aut;
+import aira.quasi.QuasiFunction.any_t;
 import aira.quasi.Unsafe;
-
-import static aira.Prelude.*;
 
 public class Main {
 
@@ -15,16 +21,20 @@ public class Main {
         qsort(alist, 0, alist.length - 1);
         System.out.println(Arrays.toString(alist));
         */
+        
+        var alist = list.invoke(1, 2, 3);
+        Aut<List<Object>> embedSpace = xs -> embed.invoke(xs, " ");
+        Aut<List<Object>> addLine = xs -> add.invoke(xs, "\n");
+        any_t<List<Object>> handle = Unsafe.as(Comb.with.invoke(addLine, embedSpace));
+        map.invoke(x -> pack.invoke(() -> System.out.print(x)), handle.invoke(alist));
 
-        System.out.println(">>> foreach: ");
-        var array = arr.invoke(1, 2, 3);
-        
-        Aut<Object[]> embedSpace = xs -> embed.invoke(xs, " ");
-        Aut<Object[]> addLine = xs -> add.invoke(xs, "\n");
-        // any_t<Object> handle = Unsafe.as(Comb.with.invoke(addLine, embedSpace));
-        
-        var state = foreach.invoke((Object[]) invoke(embedSpace, cup.invoke(array)));
+        /*
+        array = (Object[]) invoke(embedSpace, cup.invoke(array));
+        array = (Object[]) invokeExact(addLine, lisp.invoke(array));
+        var state = foreach.invoke(array);
         state.invoke(print);
+        */
+
 
         /*
         state = Unsafe.as(invokeBase(foreach, Comb.join(Comb.each(1, 5, 3)
@@ -33,8 +43,8 @@ public class Main {
         state.invoke((one_void<Object>) elem -> System.out.print(elem));
         */
 
-        foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(println);
-        foreach.invoke((Object[]) any_t.class.getMethods()).invoke(println);
+        // foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(println);
+        // foreach.invoke((Object[]) any_t.class.getMethods()).invoke(println);
     }
 
 

@@ -8,6 +8,8 @@
         "java.awt.*",
         "java.rmi.*", 
         "com.sun.tools.classfile.*",
+        "com.sun.org.apache.bcel.internal.*",
+        "com.sun.source.*",
         "jdk.javadoc.internal.*", 
         // "sun.*",
         // "jdk.*",

@@ -1,11 +1,29 @@
 package aira;
 
+import static aira.quasi.QuasiFunction.invoke;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import aira.quasi.Index;
+import aira.quasi.QuasiFunction.Aut;
+import aira.quasi.QuasiFunction.Clip;
+import aira.quasi.QuasiFunction.Cup;
+import aira.quasi.QuasiFunction.Lift;
+import aira.quasi.QuasiFunction.any_t;
+import aira.quasi.QuasiFunction.base;
+import aira.quasi.QuasiFunction.one_bool;
+import aira.quasi.QuasiFunction.one_t;
+import aira.quasi.QuasiFunction.one_void;
+import aira.quasi.QuasiFunction.three_t;
+import aira.quasi.QuasiFunction.three_u;
+import aira.quasi.QuasiFunction.two_t;
+import aira.quasi.QuasiFunction.zero_t;
+import aira.quasi.QuasiFunction.zero_throw_t;
+import aira.quasi.QuasiFunction.zero_throw_void;
+import aira.quasi.QuasiFunction.zero_void;
 import aira.quasi.Unsafe;
-
-import static aira.quasi.QuasiFunction.*;
 
 public final class Prelude {
 
@@ -57,72 +75,78 @@ public final class Prelude {
         }
     };
     public static final Eval trialEval = f -> trialOption.invoke(f, nil);
-
+ 
 // Array Functions ...
-    public static final one_t<Object[], Object> head = xs -> xs[0];
-    public static final one_t<Object[], Object> last = xs -> xs[xs.length - 1];
-    public static final Aut<Object[]> lizard = xs -> Arrays.copyOf(xs, xs.length - 1);
-    public static final Aut<Object[]> tail = xs -> Arrays.copyOfRange(xs, 1, xs.length - 1);
+    public static final one_t<List<Object>, Object> head = xs -> xs.get(0);
+    public static final one_t<List<Object>, Object> last = xs -> xs.get(xs.size() - 1);
+    public static final Aut<List<Object>> lizard = xs -> xs.subList(0, xs.size() - 1);
+    public static final Aut<List<Object>> tail = xs -> xs.subList(1, xs.size());
 
-    public static final two_t<Aut<Object>, Object[], Object[]> map = (f, xs) -> {
-        var rs = new Object[xs.length];
-        for (int index = 0; index < rs.length; index++)
-            rs[index] = f.invoke(xs[index]);
+    public interface Map extends two_t<Aut<Object>, List<Object>, List<Object>> {}
+    public static final Map map = (f, xs) -> {
+        List<Object> rs = new ArrayList<Object>(xs);
+        int size = rs.size();
+        for (int index = 0; index < size; index++)
+            rs.set(index, f.invoke(rs.get(index)));
         return rs;
     };
 
-    public interface Fold extends three_t<two_t<?, ?, ?>, Object, Object[], Object> {}
+    public interface Fold extends three_t<two_t<?, ?, ?>, Object, List<Object>, Object> {}
     public static final Fold foldl = (f, init, xs) -> {
         Object phase = init;
-        for (int index = 0; index < xs.length; index++)
-            phase = f.invoke(Unsafe.as(phase), Unsafe.as(xs[index]));
+        for (int index = 0; index < xs.size(); index++)
+            phase = f.invoke(Unsafe.as(phase), Unsafe.as(xs.get(index)));
         return phase;
     };
     public static final Fold foldr = (f, init, xs) -> {
         Object phase = init;
-        for (int index = xs.length - 1; index > -1; index--)
-            phase = f.invoke(Unsafe.as(xs[index]), Unsafe.as(phase));
+        for (int index = xs.size() - 1; index > -1; index--)
+            phase = f.invoke(Unsafe.as(xs.get(index)), Unsafe.as(phase));
         return phase;
     };
 
-    public static final Lift<Integer> range = (first, last) -> {
-        Integer[] xs = new Integer[last - first + 1];
+    public static final two_t<Integer, Integer, List<Object>> range = (first, last) -> {
+        Object[] xs = new Object[last - first + 1];
         for (int index = 0; index < xs.length; index++)
             xs[index] = first + index;
-        return xs;
+        return Arrays.asList(xs);
     };
 
-    public static final Lift<Object[]> zip = (xs, ys) -> {
-        Object[][] pairs = new Object[xs.length][2];
-        for (int index = 0; index < xs.length; index++) {
-            pairs[index][0] = xs[index];
-            pairs[index][1] = ys[index];
+    public static final Lift<List<Object>> zip = (xs, ys) -> {
+        ArrayList<List<Object>> pairs = new ArrayList<List<Object>>();
+        int infsup = Math.max(xs.size(), ys.size());
+        for (int index = 0; index < infsup; index++) {
+            ArrayList<Object> pair = new ArrayList<Object>();
+            pair.add(xs.get(index));
+            pair.add(ys.get(index));
+            pairs.set(index, pair);
         }
         return pairs;
     };
 
-    public static final Cup<Object[]> indexed = xs -> 
-        zip.invoke(xs, range.invoke(0, xs.length - 1));
+    public static final Cup<List<Object>> indexed = xs -> 
+        zip.invoke(xs, range.invoke(0, xs.size() - 1));
 
     public static final any_t<Object[]> arr = xs -> xs;
-
-    public static final Cup<Object> cup = x -> new Object[] { x };
+    public static final any_t<Object[]> cup = x -> new Object[] { x };
+    public static final any_t<List<Object>> list = xs -> Arrays.asList(xs);
+    public static final any_t<List<Object>> lisp = xs -> list.invoke(cup.invoke(xs));
 
     public static final Clip<Object> add = (xs, elem) -> {
-        Object[] array = Arrays.copyOf(xs, xs.length + 1);
-        array[xs.length] = elem;
-        return array;
+        ArrayList<Object> rs = new ArrayList<Object>(xs);
+        rs.add(elem);
+        return rs;
     };
 
     public static final Clip<Object> embed = (xs, embed) -> {
-        final int supIndex = xs.length - 1;
-        Object[] array = new Object[2 * xs.length - 1];
-        for (int index = 0; index < supIndex; index++) {
-            array[index * 2] = xs[index];
-            array[index * 2 + 1] = embed;
+        final int sup = xs.size() - 1;
+        ArrayList<Object> rs = new ArrayList<Object>();
+        for (int index = 0; index < sup; index++) {
+            rs.add(xs.get(index));
+            rs.add(embed);
         }
-        array[array.length - 1] = xs[supIndex];
-        return array;
+        rs.add(xs.get(sup));
+        return rs;
     };
 
 // Extend Functions ...
