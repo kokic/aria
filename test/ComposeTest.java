@@ -1,5 +1,8 @@
-package aira.quasi;
 
+import aira.quasi.Comb;
+import aira.quasi.QuasiFunction;
+import aira.quasi.Unsafe;
+import aira.quasi.QuasiFunction.Aut;
 import aira.quasi.QuasiFunction.any_t;
 import aira.quasi.QuasiFunction.one_t;
 import aira.quasi.QuasiFunction.one_void;
@@ -14,6 +17,10 @@ public class ComposeTest {
         zero_t<Object> fg = Unsafe.as(Comb.with.invoke(f, g));
         fg.invoke();
         QuasiFunction.invoke(fg);
+
+        var id = (Aut<Object>) x -> x;
+        zero_t<Object> fgId = Unsafe.as(Comb.withs.invoke(f, id, id, id, g));
+        fgId.invoke();
 
         var gX = (one_t<Object, String>) x -> "Hello World with " + x;
         any_t<Object> fgX = Unsafe.as(Comb.with.invoke(f, gX));

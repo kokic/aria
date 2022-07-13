@@ -8,26 +8,26 @@ Perhaps the most unreadable, non maintainable, obscure java source code. This pr
 This is just a small attempt, but in fact, as you can see, it is usually tricky to achieve this effect in Java, which means the abuse of some kind of expression. This example lacks practicability in various senses, it doesn't exist for practical application. It just shows that we can do such a thing.
 ```
 public static void qsort(int[] alist, int first, int last) {
-    while (!pass(first < last && pack(() -> {
+    while (!pass.invoke(first < last && pack.invoke(() -> {
         class Local {
             static void invoke(int[] alist, int first, int last, int[] cap) {
-                while (!(pack(() -> {
+                while (!(pack.invoke(() -> {
                     while (cap[1] < cap[2] 
-                    && pack(() -> { while (cap[1] < cap[2] 
+                    && pack.invoke(() -> { while (cap[1] < cap[2] 
                         && alist[cap[2]] >= cap[0] 
-                        && pass(cap[2] -= 1)) {} }) 
-                    && pass(alist[cap[1]] = alist[cap[2]]) 
-                    && pack(() -> { while (cap[1] < cap[2] 
+                        && pass.invoke(cap[2] -= 1)) {} }) 
+                    && pass.invoke(alist[cap[1]] = alist[cap[2]]) 
+                    && pack.invoke(() -> { while (cap[1] < cap[2] 
                         && alist[cap[1]] < cap[0] 
-                        && pass(cap[1] += 1)) {} })
-                    && pass(alist[cap[2]] = alist[cap[1]])) {}
+                        && pass.invoke(cap[1] += 1)) {} })
+                    && pass.invoke(alist[cap[2]] = alist[cap[1]])) {}
                 })
-                && pass(alist[cap[1]] = cap[0])
-                && pack(() -> qsort(alist, first, cap[1] - 1))
-                && pack(() -> qsort(alist, cap[1] + 1, last)) )) {}
+                && pass.invoke(alist[cap[1]] = cap[0])
+                && pack.invoke(() -> qsort(alist, first, cap[1] - 1))
+                && pack.invoke(() -> qsort(alist, cap[1] + 1, last)) )) {}
             }
         }
-        while (!(pack(() -> Local.invoke(alist, first, last,
+        while (!(pack.invoke(() -> Local.invoke(alist, first, last,
                 new int[] { alist[first], first, last })))) {}
     }))) {}
 }
@@ -38,31 +38,36 @@ public static void qsort(int[] alist, int first, int last) {
 Here are some basic usages.
 
 ### **compose**
-Note `quasi.QuasiFunction.one_void`, `quasi.QuasiFunction.zero`
+Note `quasi.QuasiFunction.one_void`, `quasi.QuasiFunction.zero_t`
 ```
 var f = (one_void<String>) in -> System.out.println(in);
-var g = (zero<String>) () -> "Hello World";
-var fg = Comb.with(f, g);
-QuasiFunction.invokeUniversal(fg);
+var g = (zero_t<String>) () -> "Hello World";
+zero_t<Object> fg = Unsafe.as(Comb.with.invoke(f, g));
+fg.invoke(); // also invoke(fg);
 ```
-or
+or (equivalently)
 ```
 ...
-var id = (one<Object, Object>) x -> x;
-var fg = Comb.with(f, id, id, id, g);
-QuasiFunction.invokeUniversal(fg);
+var id = (Aut<Object>) x -> x;
+zero_t<Object> fgId = Unsafe.as(Comb.withs.invoke(f, id, id, id, g));
+fgId.invoke();
 ```
+composition with parameters
 ```
-Hello World
+var gX = (one_t<Object, String>) x -> "Hello World with " + x;
+any_t<Object> fgX = Unsafe.as(Comb.with.invoke(f, gX));
+fgX.invoke(157);
+invoke(fgX, 157);
 ```
 
-### **invalid expression**
+### **expression**
 Statement `coodition ? left : right;` can be implemented as
 ```
-QuasiExpress.expr((coodition 
-    && QuasiExpress.pass(left))
-    || QuasiExpress.pass(right)
-);
+expr.invoke(coodition && pass.invoke(left) || pass.invoke(right));
+```
+`if-else` as
+```
+deltaIf.invoke(condition, () -> trueCase, () -> falseCase);
 ```
 
 ### **empty body while**
@@ -74,13 +79,13 @@ while (QuasiExpress.keep(condition1)
 {};
 ```
 
-### **meaningless index**
+### **index**
 ```
-Ind index = new Ind(); 
-while (keep(index.less(elements.length)) 
-    && pass(index.assign(array, value)) 
-    && pass(index.increase())) 
-{};
+Index index = new Index();
+while (keep.invoke(index.less.invoke(args.length)) 
+    && pass.invoke(index.apply.invoke(apply, args))
+    && pass.invoke(index.increase.invoke())) 
+{}
 ```
 
 ---
@@ -88,45 +93,41 @@ while (keep(index.less(elements.length))
 ## **fancy print**
 ### *e.g.*
 Note: 
-`quasi.QuasiFunction.foreach: any<one_void<base>>`, 
-`quasi.QuasiFunction.println: one_bool<Object>`
+`quasi.QuasiFunction.foreach: any_t<one_void<one_void<?>>>`, 
+`quasi.QuasiFunction.println: Aut<Object>`
 ```
-foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(println);
-foreach.invoke((Object[]) any.class.getMethods()).invoke(println);
+foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(System.out::println);
+foreach.invoke((Object[]) any_t.class.getMethods()).invoke(System.out::println);
 ```
 ```
 Commutative Algebra
 Homological Algebra
-public abstract java.lang.Object quasi.QuasiFunction$any.invoke(java.lang.Object[])
+public abstract java.lang.Object aira.quasi.QuasiFunction$any_t.invoke(java.lang.Object[])
 ```
 
 ### *e.g.*
 Note: `foreach.invoke: Object... -> one_void<base>`
 ```
-var state = foreach.invoke(Comb.join(Comb.each(1, 5, 3)
-        .apply(x -> (int) x - 3))
-        .apply(() -> " "));
-state.invoke((one_void<Object>) elem -> System.out.print(elem));
+Aut<List<Object>> embedSpace = xs -> embed.invoke(xs, " ");
+Aut<List<Object>> addLine = xs -> add.invoke(xs, "\n");
+any_t<List<Object>> handle = Unsafe.as(Comb.with.invoke(addLine, embedSpace));
+
+var alist = list.invoke(1, 2, 3);
+map.invoke(x -> pack.invoke(() -> System.out.print(x)), handle.invoke(alist));
+foreach.invoke(handle.invoke(alist).toArray()).invoke(System.out::print);
+```
+```
+1 2 3
+```
+
+### *e.g.*
+```
+alist = list.invoke(1, 3, 5);
+alist = map.invoke(x -> (int) x - 3, alist);
+alist = handle.invoke(alist);
+map.invoke(print, alist);
 ```
 ```
 -2 2 0
 ```
 
-## **local quasi function**
-Note: `quasi.QuasiFunction.zero_bool_u`
-```
-one_bool<Class<?>> local = new one_bool<Class<?>>() {
-    public boolean invoke(Class<?> clazz) {
-        return last.getClass() == clazz 
-            && elem.getClass() == clazz;
-    }
-};
-...
-array[alien] = /* -------- space -------- */
-      local.invoke(Integer.class) ? (Integer) elem + (Integer) last
-    : local.invoke(Double.class) ? (Double) elem + (Double) last
-    : local.invoke(Long.class) ? (Long) elem + (Long) last
-    : local.invoke(Float.class) ? (Float) elem + (Float) last
-    : last.getClass() == String.class ? elem + (String) last 
-    : (String) elem + last;
-```

@@ -12,7 +12,6 @@ import aira.quasi.QuasiFunction.Clip;
 import aira.quasi.QuasiFunction.Cup;
 import aira.quasi.QuasiFunction.Lift;
 import aira.quasi.QuasiFunction.any_t;
-import aira.quasi.QuasiFunction.base;
 import aira.quasi.QuasiFunction.one_bool;
 import aira.quasi.QuasiFunction.one_t;
 import aira.quasi.QuasiFunction.one_void;
@@ -151,8 +150,8 @@ public final class Prelude {
 
 // Extend Functions ...
 
-    public static final any_t<one_void<base>> foreach = args -> {
-        return (one_void<base>) apply -> {
+    public static final any_t<one_void<one_void<?>>> foreach = args -> {
+        return (one_void<one_void<?>>) apply -> {
             Index index = new Index();
             while (keep.invoke(index.less.invoke(args.length))
                 && pass.invoke(index.apply.invoke(apply, args))
@@ -161,6 +160,6 @@ public final class Prelude {
         };
     };
 
-    public static final one_bool<Object> print = arg -> pack.invoke(() -> System.out.print(arg));
-    public static final one_bool<Object> println = arg -> pack.invoke(() -> System.out.println(arg));
+    public static final Aut<Object> print = arg -> pack.invoke(() -> System.out.print(arg));
+    public static final Aut<Object> println = arg -> pack.invoke(() -> System.out.println(arg));
 }

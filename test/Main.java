@@ -1,10 +1,15 @@
 
 import static aira.Prelude.add;
 import static aira.Prelude.embed;
+import static aira.Prelude.foreach;
 import static aira.Prelude.list;
 import static aira.Prelude.map;
 import static aira.Prelude.pack;
+import static aira.Prelude.pass;
+import static aira.Prelude.print;
+import static aira.Prelude.println;
 
+import java.util.Arrays;
 import java.util.List;
 
 import aira.quasi.Comb;
@@ -16,39 +21,28 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        /*
-        int[] alist = new int[] { 1, -4, 6, 77, -98 };
-        qsort(alist, 0, alist.length - 1);
-        System.out.println(Arrays.toString(alist));
-        */
-        
-        var alist = list.invoke(1, 2, 3);
         Aut<List<Object>> embedSpace = xs -> embed.invoke(xs, " ");
         Aut<List<Object>> addLine = xs -> add.invoke(xs, "\n");
-        any_t<List<Object>> handle = Unsafe.as(Comb.with.invoke(addLine, embedSpace));
+        any_t<List<Object>> handle = Unsafe.as(Comb.with.invoke(addLine, embedSpace));        
+
+        int[] array = new int[] { 1, -4, 6, 77, -98 };
+        qsort(array, 0, array.length - 1);
+        println.invoke(Arrays.toString(array));
+
+        var alist = list.invoke(1, 2, 3);
         map.invoke(x -> pack.invoke(() -> System.out.print(x)), handle.invoke(alist));
+        foreach.invoke(handle.invoke(alist).toArray()).invoke(System.out::print);
 
-        /*
-        array = (Object[]) invoke(embedSpace, cup.invoke(array));
-        array = (Object[]) invokeExact(addLine, lisp.invoke(array));
-        var state = foreach.invoke(array);
-        state.invoke(print);
-        */
+        alist = list.invoke(1, 3, 5);
+        alist = map.invoke(x -> (int) x - 3, alist);
+        alist = handle.invoke(alist);
+        map.invoke(print, alist);
+        // print "=" x -> pack.invoke(() -> System.out.print(x))
 
-
-        /*
-        state = Unsafe.as(invokeBase(foreach, Comb.join(Comb.each(1, 5, 3)
-                .apply(x -> (int) x - 3))
-                .apply(() -> " ", () -> "\n")));
-        state.invoke((one_void<Object>) elem -> System.out.print(elem));
-        */
-
-        // foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(println);
-        // foreach.invoke((Object[]) any_t.class.getMethods()).invoke(println);
+        foreach.invoke("Commutative Algebra", "Homological Algebra").invoke(System.out::println);
+        foreach.invoke((Object[]) any_t.class.getMethods()).invoke(System.out::println);
     }
-
-
-    /*
+    
     public static void qsort(int[] alist, int first, int last) {
         while (!pass.invoke(first < last && pack.invoke(() -> {
             class Local {
@@ -73,5 +67,5 @@ public class Main {
                     new int[] { alist[first], first, last })))) {}
         }))) {}
     }
-    */
+
 }

@@ -33,6 +33,7 @@ public class QuasiFunction {
     public interface one_t<tX, r> extends one { r invoke(tX x); }
     public interface one_void<tX> extends one { void invoke(tX x); }
     public interface one_bool<tX> extends one { boolean invoke(tX x); }
+    public interface one_u<tX> extends one { <u> u invoke(tX x); }
 
     public interface two extends base {}
     public interface two_t<tX, tY, r> extends two { r invoke(tX x, tY y); }
@@ -41,6 +42,10 @@ public class QuasiFunction {
     public interface three_t<tX, tY, tZ, r> extends three { r invoke(tX x, tY y, tZ z); }
     public interface three_u<tX, tY, tZ> extends three { <u> u invoke(tX x, tY y, tZ z); }
 
+// quasi primitive
+    public interface Int extends one_t<Object, Integer> {};
+    public interface Bool extends one_t<Object, Boolean> {};
+    
 // alias interface
     public interface Aut<X> extends one_t<X, X> {};
     public interface Cup<X> extends one_t<X, List<X>> {};
