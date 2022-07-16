@@ -2,6 +2,7 @@ package aira;
 
 import static aira.quasi.QuasiFunction.invoke;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +76,7 @@ public final class Prelude {
     };
     public static final Eval trialEval = f -> trialOption.invoke(f, nil);
  
-// Array Functions ...
+// List Functions ...
     public static final one_t<List<Object>, Object> head = xs -> xs.get(0);
     public static final one_t<List<Object>, Object> last = xs -> xs.get(xs.size() - 1);
     public static final Aut<List<Object>> lizard = xs -> xs.subList(0, xs.size() - 1);
@@ -131,6 +132,14 @@ public final class Prelude {
     public static final any_t<List<Object>> list = xs -> Arrays.asList(xs);
     public static final any_t<List<Object>> lisp = xs -> list.invoke(cup.invoke(xs));
 
+    public static final one_t<Object, List<Object>> toList = xs -> {
+        List<Object> rs = new ArrayList<Object>();
+        final int length = Array.getLength(xs);
+        for (int index = 0; index < length; index++)
+            rs.add(Array.get(xs, index));
+        return rs;
+    };
+
     public static final Clip<Object> add = (xs, elem) -> {
         ArrayList<Object> rs = new ArrayList<Object>(xs);
         rs.add(elem);
@@ -150,6 +159,8 @@ public final class Prelude {
 
 // Extend Functions ...
 
+    public static final one_t<String, List<Object>> toCharList = x -> toList.invoke(x.toCharArray());
+
     public static final any_t<one_void<one_void<?>>> foreach = args -> {
         return (one_void<one_void<?>>) apply -> {
             Index index = new Index();
@@ -158,6 +169,20 @@ public final class Prelude {
                 && pass.invoke(index.increase.invoke())) 
             {}
         };
+    };
+
+    public static final one_t<Object, any_t<Object>> switchIt = x -> args -> {
+        final int sup = args.length - 1;
+        for (int index = 0; index < sup; index += 2) {
+            Object key = args[index];
+            Object val = args[index + 1];
+            boolean isArray = key instanceof Object[];
+            boolean caseElem = key.equals(x);
+            boolean caseGroup = isArray && Arrays.asList((Object[]) key).contains(x);
+            if (caseElem || caseGroup)
+                return val;
+        }
+        return args[args.length - 1];
     };
 
     public static final Aut<Object> print = arg -> pack.invoke(() -> System.out.print(arg));

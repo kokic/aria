@@ -6,6 +6,7 @@ import static aira.Prelude.list;
 import static aira.Prelude.lizard;
 import static aira.quasi.QuasiFunction.invoke;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -22,11 +23,15 @@ public class Comb {
     public static final one_t<Object, Class<?>> clazz = 
         x -> x instanceof Class ? (Class<?>) x : x.getClass();
 
-    // instance: base -> Type[]
+    // ClassOrInstance, [index] -> Type[]
     public static final any_t<Type[]> getGenericTypes = (
         Object... args) -> ((ParameterizedType) clazz.invoke(args[0])
                 .getGenericInterfaces()[args.length == 1 ? 0 : (int) args[1]])
                 .getActualTypeArguments();
+
+    // Field -> Type[]
+    public static final one_t<Field, Type[]> getFieldGenericTypes = 
+        x -> ((ParameterizedType) x.getGenericType()).getActualTypeArguments();
 
     // f: Y -> Z, g: X -> Y, fg: X -> Z
     public static final two_t<base, base, base> with = (f, g) -> g instanceof zero
@@ -35,5 +40,14 @@ public class Comb {
 
     public static final any_t<base> withs = fs -> (base) 
         foldr.invoke(with, last.invoke(list.invoke(fs)), lizard.invoke(list.invoke(fs)));
+
+    /*    
+    public static void main(String[] args) {
         
+        Field field = (Field) Prelude.eval.invoke(() -> Comb.class.getField("getFieldGenericTypes"));
+        Type[] types = getFieldGenericTypes.invoke(field);
+        System.out.println(Arrays.asList(types));
+
+    }
+    */
 }
