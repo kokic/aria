@@ -13,6 +13,7 @@ import aira.quasi.QuasiFunction.Clip;
 import aira.quasi.QuasiFunction.Cup;
 import aira.quasi.QuasiFunction.Lift;
 import aira.quasi.QuasiFunction.any_t;
+import aira.quasi.QuasiFunction.any_void;
 import aira.quasi.QuasiFunction.one_bool;
 import aira.quasi.QuasiFunction.one_t;
 import aira.quasi.QuasiFunction.one_void;
@@ -44,10 +45,9 @@ public final class Prelude {
     public static final one_void<Object> expr = x -> {};
     public static final one_bool<Boolean> keep = x -> x;
     public static final one_bool<Object> pass = x -> true;
-    
-    public static final one_bool<zero_void> pack = inlineFunction ->
-        pass.invoke(invoke(inlineFunction)); 
+    public static final one_bool<zero_void> pack = x -> pass.invoke(invoke(x));
 
+// Throwable Handle
     public static final one_void<zero_throw_void> ignore = f -> {
         try { f.invoke(); } catch (Throwable throwable) {}
     };
@@ -161,6 +161,14 @@ public final class Prelude {
 
     public static final one_t<String, List<Object>> toCharList = x -> toList.invoke(x.toCharArray());
 
+    public static final any_void flow = xs -> {
+        Index index = new Index();
+        while (keep.invoke(index.less.invoke(xs.length))
+            && pack.invoke(() -> index.as.<zero_void>invoke(xs).invoke())
+            && pass.invoke(index.increase.invoke())) 
+        {}
+    };
+    
     public static final any_t<one_void<one_void<?>>> foreach = args -> {
         return (one_void<one_void<?>>) apply -> {
             Index index = new Index();

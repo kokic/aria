@@ -40,14 +40,4 @@ public class Comb {
 
     public static final any_t<base> withs = fs -> (base) 
         foldr.invoke(with, last.invoke(list.invoke(fs)), lizard.invoke(list.invoke(fs)));
-
-    /*    
-    public static void main(String[] args) {
-        
-        Field field = (Field) Prelude.eval.invoke(() -> Comb.class.getField("getFieldGenericTypes"));
-        Type[] types = getFieldGenericTypes.invoke(field);
-        System.out.println(Arrays.asList(types));
-
-    }
-    */
 }

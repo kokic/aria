@@ -25,7 +25,6 @@ public class QuasiFunction {
     public interface zero_void extends zero { void invoke(); }
     public interface zero_bool extends zero { boolean invoke(); }
     public interface zero_u extends zero { <u> u invoke(); }
-    public interface zero_bool_u extends zero { <u> boolean invoke(); }
     public interface zero_throw_t<r> extends zero { r invoke() throws Throwable; }
     public interface zero_throw_void extends zero { void invoke() throws Throwable; }
 
@@ -36,10 +35,14 @@ public class QuasiFunction {
     public interface one_u<tX> extends one { <u> u invoke(tX x); }
 
     public interface two extends base {}
+    public interface two_void<tX, tY> extends two { void invoke(tX x, tY y); }
+    public interface two_bool<tX, tY> extends two { boolean invoke(tX x, tY y); }
     public interface two_t<tX, tY, r> extends two { r invoke(tX x, tY y); }
     public interface two_u<tX, tY> extends two { <u> u invoke(tX x, tY y); }
 
     public interface three extends base {}
+    public interface three_void<tX, tY, tZ> extends three { void invoke(tX x, tY y, tZ z); }
+    public interface three_bool<tX, tY, tZ> extends three { boolean invoke(tX x, tY y, tZ z); }
     public interface three_t<tX, tY, tZ, r> extends three { r invoke(tX x, tY y, tZ z); }
     public interface three_u<tX, tY, tZ> extends three { <u> u invoke(tX x, tY y, tZ z); }
     

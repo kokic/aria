@@ -3,6 +3,7 @@ package aira.quasi;
 import aira.quasi.QuasiFunction.base;
 import aira.quasi.QuasiFunction.one_bool;
 import aira.quasi.QuasiFunction.one_t;
+import aira.quasi.QuasiFunction.one_u;
 import aira.quasi.QuasiFunction.two_t;
 import aira.quasi.QuasiFunction.zero_t;
 
@@ -26,4 +27,9 @@ public class Index {
 	public two_t<Object[], Object, Object> assign = (xs, val) -> xs[value] = val;
 	public two_t<base, Object[], Object> apply = (f, xs) -> QuasiFunction.invoke(f, of.invoke(xs));
 	
+	public one_u<Object[]> as = new one_u<Object[]>() {
+		public <u> u invoke(Object[] xs) {
+			return Unsafe.as(xs[value]);
+		}
+	}; 
 }
